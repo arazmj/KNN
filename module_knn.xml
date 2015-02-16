@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_knn" default="compile.module.knn">
+  <dirname property="module.knn.basedir" file="${ant.file.module_knn}"/>
+  
+  <property name="module.jdk.home.knn" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.knn" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.knn" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.knn" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="knn.output.dir" value="${module.knn.basedir}/out/production/knn"/>
+  <property name="knn.testoutput.dir" value="${module.knn.basedir}/out/test/knn"/>
+  
+  <path id="knn.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="knn.module.production.classpath">
+    <path refid="${module.jdk.classpath.knn}"/>
+  </path>
+  
+  <path id="knn.runtime.production.module.classpath">
+    <pathelement location="${knn.output.dir}"/>
+  </path>
+  
+  <path id="knn.module.classpath">
+    <path refid="${module.jdk.classpath.knn}"/>
+    <pathelement location="${knn.output.dir}"/>
+  </path>
+  
+  <path id="knn.runtime.module.classpath">
+    <pathelement location="${knn.testoutput.dir}"/>
+    <pathelement location="${knn.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.knn">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.knn">
+    <patternset refid="excluded.from.module.knn"/>
+  </patternset>
+  
+  <path id="knn.module.sourcepath">
+    <dirset dir="${module.knn.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.knn" depends="compile.module.knn.production,compile.module.knn.tests" description="Compile module knn"/>
+  
+  <target name="compile.module.knn.production" depends="register.custom.compilers" description="Compile module knn; production classes">
+    <mkdir dir="${knn.output.dir}"/>
+    <javac2 destdir="${knn.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.knn}/javac">
+      <compilerarg line="${compiler.args.knn}"/>
+      <bootclasspath refid="knn.module.bootclasspath"/>
+      <classpath refid="knn.module.production.classpath"/>
+      <src refid="knn.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.knn"/>
+    </javac2>
+    
+    <copy todir="${knn.output.dir}">
+      <fileset dir="${module.knn.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.knn.tests" depends="register.custom.compilers,compile.module.knn.production" description="compile module knn; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.knn" description="cleanup module">
+    <delete dir="${knn.output.dir}"/>
+    <delete dir="${knn.testoutput.dir}"/>
+  </target>
+</project>
